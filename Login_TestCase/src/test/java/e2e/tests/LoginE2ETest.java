@@ -2,6 +2,7 @@ package e2e.tests;
 
 import e2e.base.BaseTest;
 import e2e.pages.LoginPage;
+import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -121,6 +122,33 @@ class LoginE2ETest extends BaseTest {
         // Assert 2: van o lai trang Login
         assertThat(loginPage.isOnLoginPage())
                 .as("Chi nhap khoang trang thi phai o lai trang /Login")
+                .isTrue();
+    }
+
+    @Test
+    @DisplayName("TC06: Dung tai khoan, sai mat khau -> o lai trang Login va bao tai khoan hoac mat khau khong dung")
+    void login_whenCorrectUsernameWrongPassword_staysOnLoginPageWithInvalidCredentialsError() {
+        // Arrange: tai khoan that lay tu bien moi truong, KHONG viet vao code
+        String username = System.getenv("UTC_USER");
+        // Thieu bien moi truong thi bo qua test (skipped), khong lam fail ca bo test
+        Assumptions.assumeTrue(username != null && !username.isBlank(),
+                "Thieu bien moi truong UTC_USER -> bo qua TC06");
+        // Mat khau sai ngau nhien, chac chan khong trung mat khau that
+        String wrongPass = "SaiMatKhau@" + System.currentTimeMillis();
+
+        // Act
+        LoginPage loginPage = new LoginPage(driver).open();
+        loginPage.loginExpectingFailure(username, wrongPass);
+
+        // Assert 1: dong loi dung noi dung (getErrorMessage tu cho dong loi hien ra)
+        String errorMessage = loginPage.getErrorMessage();
+        assertThat(errorMessage)
+                .as("Dung tai khoan nhung sai mat khau phai bao tai khoan hoac mat khau khong dung")
+                .containsIgnoringCase("tài khoản hoặc mật khẩu không đúng");
+
+        // Assert 2: van o lai trang Login
+        assertThat(loginPage.isOnLoginPage())
+                .as("Sai mat khau thi phai o lai trang /Login")
                 .isTrue();
     }
 }
