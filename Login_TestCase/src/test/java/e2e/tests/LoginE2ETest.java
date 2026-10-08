@@ -151,4 +151,31 @@ class LoginE2ETest extends BaseTest {
                 .as("Sai mat khau thi phai o lai trang /Login")
                 .isTrue();
     }
+
+    @Test
+    @DisplayName("TC07: Dung mat khau, sai tai khoan -> o lai trang Login va bao tai khoan hoac mat khau khong dung")
+    void login_whenWrongUsernameCorrectPassword_staysOnLoginPageWithInvalidCredentialsError() {
+        // Arrange: mat khau that lay tu bien moi truong, KHONG viet vao code
+        String password = System.getenv("UTC_PASS");
+        // Thieu bien moi truong thi bo qua test (skipped), khong lam fail ca bo test
+        Assumptions.assumeTrue(password != null && !password.isBlank(),
+                "Thieu bien moi truong UTC_PASS -> bo qua TC07");
+        // Ten dang nhap ngau nhien, chac chan khong ton tai
+        String fakeUser = "sai_tai_khoan_" + System.currentTimeMillis();
+ 
+        // Act
+        LoginPage loginPage = new LoginPage(driver).open();
+        loginPage.loginExpectingFailure(fakeUser, password);
+ 
+        // Assert 1: dong loi dung noi dung (getErrorMessage tu cho dong loi hien ra)
+        String errorMessage = loginPage.getErrorMessage();
+        assertThat(errorMessage)
+                .as("Sai tai khoan nhung dung mat khau van phai bao tai khoan hoac mat khau khong dung")
+                .containsIgnoringCase("tài khoản hoặc mật khẩu không đúng");
+ 
+        // Assert 2: van o lai trang Login
+        assertThat(loginPage.isOnLoginPage())
+                .as("Sai tai khoan thi phai o lai trang /Login")
+                .isTrue();
+    }
 }
