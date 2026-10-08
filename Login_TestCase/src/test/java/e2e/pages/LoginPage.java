@@ -60,8 +60,10 @@ public class LoginPage extends BasePage {
     // ----- Private helper -----
 
     private void submitCredentials(String username, String password) {
-        type(usernameField, username);
-        // De trong mat khau: bo qua buoc go, tranh sendKeys("") khong can thiet
+        // De trong o nao thi bo qua buoc go o do (null hoac "" deu duoc)
+        if (username != null && !username.isEmpty()) {
+            type(usernameField, username);
+        }
         if (password != null && !password.isEmpty()) {
             type(passwordField, password);
         }
