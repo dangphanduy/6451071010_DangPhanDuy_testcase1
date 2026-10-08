@@ -101,4 +101,26 @@ class LoginE2ETest extends BaseTest {
                 .as("Bo trong ca hai o thi phai o lai trang /Login")
                 .isTrue();
     }
+
+    @Test
+    @DisplayName("TC05: Chi nhap khoang trang -> o lai trang Login va bao tai khoan hoac mat khau khong dung")
+    void login_whenOnlySpaces_staysOnLoginPageWithInvalidCredentialsError() {
+        // Arrange: ca hai o chi chua khoang trang (khong phai o trong)
+        String spaces = "   ";
+
+        // Act
+        LoginPage loginPage = new LoginPage(driver).open();
+        loginPage.loginExpectingFailure(spaces, spaces);
+
+        // Assert 1: dong loi dung noi dung (getErrorMessage tu cho dong loi hien ra)
+        String errorMessage = loginPage.getErrorMessage();
+        assertThat(errorMessage)
+                .as("Khoang trang bi coi la thong tin sai, khong phai o trong")
+                .containsIgnoringCase("tài khoản hoặc mật khẩu không đúng");
+
+        // Assert 2: van o lai trang Login
+        assertThat(loginPage.isOnLoginPage())
+                .as("Chi nhap khoang trang thi phai o lai trang /Login")
+                .isTrue();
+    }
 }
