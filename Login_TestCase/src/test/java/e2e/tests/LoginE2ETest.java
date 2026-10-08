@@ -58,4 +58,26 @@ class LoginE2ETest extends BaseTest {
                 .as("Bo trong ten dang nhap thi phai o lai trang /Login")
                 .isTrue();
     }
+
+    @Test
+    @DisplayName("TC03: Bo trong mat khau -> o lai trang Login va bao chua nhap mat khau")
+    void login_whenPasswordIsEmpty_staysOnLoginPageWithPasswordError() {
+        // Arrange: chi nhap ten dang nhap ngau nhien, de trong mat khau
+        String fakeUser = "sai_tai_khoan_" + System.currentTimeMillis();
+
+        // Act
+        LoginPage loginPage = new LoginPage(driver).open();
+        loginPage.loginExpectingFailure(fakeUser, "");
+
+        // Assert 1: dong loi dung noi dung (getErrorMessage tu cho dong loi hien ra)
+        String errorMessage = loginPage.getErrorMessage();
+        assertThat(errorMessage)
+                .as("Phai bao loi chua nhap mat khau")
+                .containsIgnoringCase("chưa nhập mật khẩu");
+
+        // Assert 2: van o lai trang Login
+        assertThat(loginPage.isOnLoginPage())
+                .as("Bo trong mat khau thi phai o lai trang /Login")
+                .isTrue();
+    }
 }
