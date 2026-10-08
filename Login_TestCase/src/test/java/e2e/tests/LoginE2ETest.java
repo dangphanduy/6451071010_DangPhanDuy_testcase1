@@ -80,4 +80,25 @@ class LoginE2ETest extends BaseTest {
                 .as("Bo trong mat khau thi phai o lai trang /Login")
                 .isTrue();
     }
+
+    @Test
+    @DisplayName("TC04: Bo trong ca ten dang nhap va mat khau -> o lai trang Login va hien loi")
+    void login_whenBothFieldsAreEmpty_staysOnLoginPageWithError() {
+        // Arrange: khong can du lieu, de trong ca hai o
+
+        // Act
+        LoginPage loginPage = new LoginPage(driver).open();
+        loginPage.loginExpectingFailure("", "");
+
+        // Assert 1: co thong bao loi (getErrorMessage tu cho dong loi hien ra)
+        String errorMessage = loginPage.getErrorMessage();
+        assertThat(errorMessage)
+                .as("Phai hien thong bao loi khi bo trong ca hai o")
+                .isNotBlank();
+
+        // Assert 2: van o lai trang Login
+        assertThat(loginPage.isOnLoginPage())
+                .as("Bo trong ca hai o thi phai o lai trang /Login")
+                .isTrue();
+    }
 }
